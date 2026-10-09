@@ -1,11 +1,65 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
+import { OpenRouter, tool } from '@openrouter/agent';
+import dotenv from 'dotenv';
 import path from 'node:path';
+import { z } from 'zod';
 import started from 'electron-squirrel-startup';
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
 }
+
+const weatherTool = tool({
+  name: 'get_weather',
+  description: 'Get the current weather for a location',
+  inputSchema: z.object({
+    location: z.string().describe('City name'),
+  }),
+  execute: async ({ location }) => {
+    return { temperature: 72, condition: 'sunny', location };
+  },
+});
+
+type WeatherDemoResult = {
+  input: string;
+  model: string;
+  text: string;
+};
+
+const runWeatherDemo = async (): Promise<WeatherDemoResult> => {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  const model = process.env.OPENROUTER_MODEL;
+  /*const resolvedModel =
+    typeof model === 'string' && model.trim() !== ''
+      ? model.trim()
+      : 'google/gemma-4-31b-it:free';*/
+  const resolvedModel =
+    typeof model === 'string' && model.trim() !== ''
+      ? 'apodex/apodex-1.1-mini:free'
+      : 'google/gemma-4-31b-it:free';
+  const input = 'What is the weather in San Francisco?';
+
+  if (!apiKey) {
+    throw new Error('OPENROUTER_API_KEY is not set.');
+  }
+
+  const openrouter = new OpenRouter({ apiKey });
+  const result = openrouter.callModel({
+    model: resolvedModel,
+    input,
+    tools: [weatherTool],
+  });
+  const text = await result.getText();
+
+  return {
+    input,
+    model: resolvedModel,
+    text,
+  };
+};
 
 const createWindow = () => {
   // Create the browser window.
@@ -30,10 +84,14 @@ const createWindow = () => {
   mainWindow.webContents.openDevTools();
 };
 
+ipcMain.handle('openrouter:runWeatherDemo', async () => runWeatherDemo());
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

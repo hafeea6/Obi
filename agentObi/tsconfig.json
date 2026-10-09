@@ -12,6 +12,6 @@
     "rootDir": "src",              // 1. Explicitly sets the output layout root
     "resolveJsonModule": true
   },
-  "include": ["src/**/*",     "forge.env.d.ts"
+  "include": ["src/**/*",     "forge.env.d.ts", "global.d.ts"
 ]          // 2. Simplifies file inclusion
 }

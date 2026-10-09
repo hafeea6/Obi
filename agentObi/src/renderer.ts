@@ -28,6 +28,55 @@
 
 import './index.css';
 
-console.log(
-  '👋 This message is being logged by "renderer.ts", included via Vite',
-);
+const app = document.querySelector<HTMLDivElement>('#app');
+
+if (!app) {
+  throw new Error('App root element was not found.');
+}
+
+app.innerHTML = `
+  <main class="app-shell">
+    <h1>OpenRouter Weather Demo</h1>
+    <p class="app-description">
+      Run the configured OpenRouter call from the desktop app.
+    </p>
+    <button id="run-weather-demo" class="run-button" type="button">
+      Run weather call
+    </button>
+    <p id="status" class="status" aria-live="polite">Ready.</p>
+    <section class="result-panel">
+      <h2>Result</h2>
+      <p><strong>Model:</strong> <span id="model-name">Not run yet</span></p>
+      <pre id="result-text" class="result-output">Click the button to run the call.</pre>
+    </section>
+  </main>
+`;
+
+const runButton = document.querySelector<HTMLButtonElement>('#run-weather-demo');
+const status = document.querySelector<HTMLParagraphElement>('#status');
+const modelName = document.querySelector<HTMLSpanElement>('#model-name');
+const resultText = document.querySelector<HTMLPreElement>('#result-text');
+
+if (!runButton || !status || !modelName || !resultText) {
+  throw new Error('Required renderer elements were not found.');
+}
+
+runButton.addEventListener('click', async () => {
+  runButton.disabled = true;
+  status.textContent = 'Running OpenRouter call...';
+
+  try {
+    const result = await window.openrouterDemo.runWeatherDemo();
+
+    modelName.textContent = result.model;
+    resultText.textContent = result.text;
+    status.textContent = `Completed prompt: ${result.input}`;
+  } catch (error: unknown) {
+    modelName.textContent = 'Run failed';
+    resultText.textContent =
+      error instanceof Error ? error.message : 'An unknown error occurred.';
+    status.textContent = 'The OpenRouter call failed.';
+  } finally {
+    runButton.disabled = false;
+  }
+});
