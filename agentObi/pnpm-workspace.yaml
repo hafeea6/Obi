@@ -1,0 +1,6 @@
+allowBuilds:
+  electron-winstaller: true
+  esbuild: true
+blockExoticSubdeps: false
+packages:
+  - "."

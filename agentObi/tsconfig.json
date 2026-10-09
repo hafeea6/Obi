@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "src",              // 1. Explicitly sets the output layout root
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*",     "forge.env.d.ts"
+]          // 2. Simplifies file inclusion
+}
