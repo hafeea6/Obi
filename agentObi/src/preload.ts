@@ -1,5 +1,3 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { exposeHelloWorldClient } from "./frontend/ipc/HelloWorldClient";
 
-contextBridge.exposeInMainWorld('openrouterDemo', {
-  runWeatherDemo: () => ipcRenderer.invoke('openrouter:runWeatherDemo'),
-});
+exposeHelloWorldClient();
