@@ -1,12 +1,12 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-import { HELLO_WORLD_CHANNEL } from "../../common/ipc/HelloWorldChannel";
+import { APP_CHANNELS } from "../../common/ipc/AppChannels";
 
 /**
  * The client for the Hello World IPC functionality.
  */
 const helloWorldClient = {
-  runHelloWorld: () => ipcRenderer.invoke(HELLO_WORLD_CHANNEL),
+  runHelloWorld: () => ipcRenderer.invoke(APP_CHANNELS.HELLO_WORLD),
 };
 
 /**
