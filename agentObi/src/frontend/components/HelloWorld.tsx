@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+/**
+ * A React component that demonstrates the Hello World functionality.
+ */
 export function HelloWorld() {
   const [message, setMessage] = useState("Click the button.");
 
@@ -17,11 +20,7 @@ export function HelloWorld() {
   return (
     <main className="app-shell">
       <h1>Hello World</h1>
-      <button
-        className="run-button"
-        type="button"
-        onClick={runHelloWorld}
-      >
+      <button className="run-button" type="button" onClick={runHelloWorld}>
         Run hello world
       </button>
       <section className="result-panel">
